@@ -25,7 +25,7 @@ namespace HeyClicky
             // For V1 testing without an API key, use MockVisionProvider.
             // Replace with GeminiVisionProvider when ready to test live vision.
            // IVisionProvider visionProvider = new MockVisionProvider();
-            IVisionProvider visionProvider = new GeminiVisionProvider("YOUR_API_KEY_HERE");
+            IVisionProvider visionProvider = new GeminiVisionProvider("");
 
             _agent = new AgentController(visionProvider);
             

@@ -57,7 +57,7 @@ namespace HeyClicky.Core
             byte[] screenshot = ScreenCapture.CaptureScreen();
 
             UpdateState(AgentState.Reasoning, "Analyzing screen...");
-            string instruction = $@"Find the search result for the application '{appName}'. 
+            string instruction = $@"Find the Windows Start Menu search result for the application '{appName}'. 
 Respond with JSON strictly matching this schema: 
 {{
   ""elements"": [
@@ -72,20 +72,28 @@ Respond with JSON strictly matching this schema:
     }}
   ]
 }}
-Ensure the x and y coordinates are the center of the best matching result to click.";
+IMPORTANT: You must return the X and Y coordinates scaled between 0 and 1000! (0,0 is top-left, 1000,1000 is bottom-right). 
+Point precisely to the center of the actual application icon/text on the left-hand list, NOT the giant web preview panel.";
             
             var analysis = await _visionProvider.AnalyzeScreenAsync(screenshot, instruction);
             var target = analysis?.Elements?.OrderByDescending(e => e.Confidence).FirstOrDefault();
 
             if (target != null && target.Confidence > 0.5)
             {
+                // Convert normalized 0-1000 coordinates back to actual screen pixels
+                int screenWidth = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
+                int screenHeight = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height;
+                
+                int realX = (int)((target.X / 1000.0) * screenWidth);
+                int realY = (int)((target.Y / 1000.0) * screenHeight);
+
                 // 3. ACT (Move and Click)
-                UpdateState(AgentState.Acting, $"Moving to {target.X}, {target.Y}");
-                OnTargetIdentified?.Invoke(target.X, target.Y);
+                UpdateState(AgentState.Acting, $"Moving to {realX}, {realY}");
+                OnTargetIdentified?.Invoke(realX, realY);
                 
                 await Task.Delay(500); // Small pause for the UI indicator to show
                 
-                MouseController.MoveTo(target.X, target.Y, durationMs: 400); // Smooth move
+                MouseController.MoveTo(realX, realY, durationMs: 400); // Smooth move
                 await Task.Delay(100);
                 
                 UpdateState(AgentState.Acting, "Clicking target...");

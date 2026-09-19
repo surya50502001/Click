@@ -26,7 +26,7 @@ namespace HeyClicky.Vision
             }
 
             string base64Image = Convert.ToBase64String(screenshot);
-            string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key={_apiKey}";
+            string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={_apiKey}";
 
             var payload = new
             {
