@@ -11,26 +11,70 @@
         IsHitTestVisible="False">
     <Canvas x:Name="OverlayCanvas" Background="Transparent">
         
-        <!-- Status indicator (top right) -->
-        <StackPanel x:Name="StatusPanel" Canvas.Right="20" Canvas.Top="20" Orientation="Horizontal" Background="#80000000" Margin="10">
-            <Ellipse Width="15" Height="15" Fill="Cyan" Margin="10,5,5,5" x:Name="StatusDot">
+        <!-- Floating Companion Ball / Orb (Top Right) -->
+        <Grid x:Name="CompanionOrb" Canvas.Right="24" Canvas.Top="24" Width="68" Height="68">
+            
+            <!-- Outer Pulsing Glow Aura -->
+            <Ellipse x:Name="OrbAura" Width="68" Height="68" Fill="#38BDF8" Opacity="0.3" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Ellipse.Triggers>
                     <EventTrigger RoutedEvent="Window.Loaded">
                         <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="StatusDot" 
+                            <Storyboard RepeatBehavior="Forever">
+                                <DoubleAnimation Storyboard.TargetName="OrbAura" 
                                                  Storyboard.TargetProperty="Opacity" 
-                                                 From="1.0" To="0.5" Duration="0:0:1" 
-                                                 AutoReverse="True" RepeatBehavior="Forever"/>
+                                                 From="0.45" To="0.1" Duration="0:0:1.4" 
+                                                 AutoReverse="True"/>
+                                <DoubleAnimation Storyboard.TargetName="OrbAura" 
+                                                 Storyboard.TargetProperty="Width" 
+                                                 From="62" To="74" Duration="0:0:1.4" 
+                                                 AutoReverse="True"/>
+                                <DoubleAnimation Storyboard.TargetName="OrbAura" 
+                                                 Storyboard.TargetProperty="Height" 
+                                                 From="62" To="74" Duration="0:0:1.4" 
+                                                 AutoReverse="True"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                 </Ellipse.Triggers>
             </Ellipse>
-            <TextBlock x:Name="StatusText" Text="Idle" Foreground="White" Margin="5,5,15,5" VerticalAlignment="Center" FontWeight="Bold"/>
-        </StackPanel>
 
-        <!-- Target Marker (hidden by default) -->
-        <Ellipse x:Name="TargetMarker" Width="40" Height="40" Stroke="Red" StrokeThickness="3" Visibility="Collapsed" Fill="#40FF0000" />
+            <!-- Glowing Cybernetic Halo Ring -->
+            <Ellipse x:Name="OrbGlowRing" Width="58" Height="58" Stroke="#38BDF8" StrokeThickness="2.5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Ellipse.Effect>
+                    <DropShadowEffect x:Name="OrbDropShadow" Color="#38BDF8" BlurRadius="16" ShadowDepth="0" Opacity="0.85"/>
+                </Ellipse.Effect>
+            </Ellipse>
+
+            <!-- Dark Inner Background -->
+            <Ellipse Width="52" Height="52" Fill="#0F172A" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <!-- Cute Avatar Ball Content -->
+            <Ellipse Width="50" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Ellipse.Fill>
+                    <ImageBrush ImageSource="/Assets/avatar.jpg" Stretch="UniformToFill"/>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <!-- Mini Status Dot Badge on the corner of the ball -->
+            <Grid HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,4,4">
+                <Ellipse x:Name="OrbStatusDotGlow" Width="14" Height="14" Fill="#38BDF8" Opacity="0.5"/>
+                <Ellipse x:Name="OrbStatusDot" Width="10" Height="10" Fill="#38BDF8" Stroke="#0F172A" StrokeThickness="1.5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </Grid>
+
+        <!-- Futuristic Ripple Target Marker (Hidden by default) -->
+        <Canvas x:Name="TargetMarkerGroup" Visibility="Collapsed">
+            <Ellipse x:Name="TargetRipple" Width="60" Height="60" Stroke="#EF4444" StrokeThickness="1.5" Opacity="0.5">
+                <Ellipse.Effect>
+                    <DropShadowEffect Color="#EF4444" BlurRadius="12" ShadowDepth="0"/>
+                </Ellipse.Effect>
+            </Ellipse>
+            <Ellipse x:Name="TargetMarker" Width="30" Height="30" Stroke="#EF4444" StrokeThickness="2.5" Fill="#33EF4444" Canvas.Left="15" Canvas.Top="15">
+                <Ellipse.Effect>
+                    <DropShadowEffect Color="#EF4444" BlurRadius="6" ShadowDepth="0"/>
+                </Ellipse.Effect>
+            </Ellipse>
+            <Ellipse Width="6" Height="6" Fill="#EF4444" Canvas.Left="27" Canvas.Top="27"/>
+        </Canvas>
     </Canvas>
 </Window>

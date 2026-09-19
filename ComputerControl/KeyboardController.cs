@@ -42,6 +42,17 @@ namespace HeyClicky.ComputerControl
             PressKey(NativeMethods.VK_RETURN);
         }
 
+        public static void SendHotkey(ushort modifier, ushort key)
+        {
+            SendKeyEvent(modifier, false);
+            Thread.Sleep(30);
+            SendKeyEvent(key, false);
+            Thread.Sleep(50);
+            SendKeyEvent(key, true);
+            Thread.Sleep(30);
+            SendKeyEvent(modifier, true);
+        }
+
         private static void SendKeyEvent(ushort key, bool keyUp)
         {
             NativeMethods.INPUT[] inputs = new NativeMethods.INPUT[1];

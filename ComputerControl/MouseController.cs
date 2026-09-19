@@ -57,6 +57,53 @@ namespace HeyClicky.ComputerControl
             LeftClick();
         }
 
+        public static void MouseDown()
+        {
+            SendMouseEvent(NativeMethods.MouseEventFlags.LEFTDOWN);
+        }
+
+        public static void MouseUp()
+        {
+            SendMouseEvent(NativeMethods.MouseEventFlags.LEFTUP);
+        }
+
+        public static void Drag(int startX, int startY, int endX, int endY, int durationMs = 500)
+        {
+            MoveTo(startX, startY, 150);
+            Thread.Sleep(50);
+            MouseDown();
+            Thread.Sleep(50);
+            MoveTo(endX, endY, durationMs);
+            Thread.Sleep(50);
+            MouseUp();
+        }
+
+        public static void DrawCircle(int centerX, int centerY, int radius = 60, int steps = 36)
+        {
+            if (radius <= 0) radius = 50;
+
+            // Move to the starting point of the circle (at angle 0)
+            int startX = (int)(centerX + radius);
+            int startY = centerY;
+            MoveTo(startX, startY, 200);
+            Thread.Sleep(100);
+
+            MouseDown();
+            Thread.Sleep(50);
+
+            for (int i = 1; i <= steps; i++)
+            {
+                double angle = (2 * Math.PI / steps) * i;
+                int x = (int)(centerX + (radius * Math.Cos(angle)));
+                int y = (int)(centerY + (radius * Math.Sin(angle)));
+                NativeMethods.SetCursorPos(x, y);
+                Thread.Sleep(25);
+            }
+
+            Thread.Sleep(50);
+            MouseUp();
+        }
+
         private static void SendMouseEvent(NativeMethods.MouseEventFlags flags)
         {
             NativeMethods.INPUT[] inputs = new NativeMethods.INPUT[1];
