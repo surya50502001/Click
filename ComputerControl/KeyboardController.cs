@@ -9,7 +9,7 @@ namespace HeyClicky.ComputerControl
         public static void PressKey(ushort key)
         {
             SendKeyEvent(key, false);
-            Thread.Sleep(50);
+            Thread.Sleep(10);
             SendKeyEvent(key, true);
         }
 
@@ -28,7 +28,7 @@ namespace HeyClicky.ComputerControl
                 inputs[1].u.ki.dwFlags = (uint)(NativeMethods.KeyEventFlags.UNICODE | NativeMethods.KeyEventFlags.KEYUP);
 
                 NativeMethods.SendInput(2, inputs, Marshal.SizeOf(typeof(NativeMethods.INPUT)));
-                Thread.Sleep(20);
+                Thread.Sleep(2);
             }
         }
 
@@ -45,11 +45,11 @@ namespace HeyClicky.ComputerControl
         public static void SendHotkey(ushort modifier, ushort key)
         {
             SendKeyEvent(modifier, false);
-            Thread.Sleep(30);
+            Thread.Sleep(10);
             SendKeyEvent(key, false);
-            Thread.Sleep(50);
+            Thread.Sleep(15);
             SendKeyEvent(key, true);
-            Thread.Sleep(30);
+            Thread.Sleep(10);
             SendKeyEvent(modifier, true);
         }
 

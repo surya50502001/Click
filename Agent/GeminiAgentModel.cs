@@ -14,12 +14,12 @@ namespace HeyClicky.Agent
         private readonly HttpClient _httpClient;
         private readonly ToolRegistry _toolRegistry;
 
-        // Fallback models when one is overloaded / experiencing high demand
+        // Fallback models prioritizing ultra-low latency models
         private static readonly string[] CandidateModels = new[]
         {
+            "gemini-2.5-flash-lite",
             "gemini-2.5-flash",
             "gemini-flash-latest",
-            "gemini-2.5-flash-lite",
             "gemini-3.5-flash",
             "gemini-pro-latest"
         };
@@ -27,7 +27,7 @@ namespace HeyClicky.Agent
         public GeminiAgentModel(string apiKey, ToolRegistry toolRegistry)
         {
             _apiKey = apiKey;
-            _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
+            _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
             _toolRegistry = toolRegistry;
         }
 
@@ -57,7 +57,9 @@ namespace HeyClicky.Agent
                 },
                 generationConfig = new
                 {
-                    response_mime_type = "application/json"
+                    response_mime_type = "application/json",
+                    temperature = 0.1,
+                    maxOutputTokens = 300
                 }
             };
 

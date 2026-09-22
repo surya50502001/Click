@@ -8,8 +8,8 @@ namespace HeyClicky.ComputerControl
 {
     public class ScreenCapture
     {
-        // Returns the screen capture as optimized JPEG bytes
-        public static byte[] CaptureScreen(int maxDimension = 1280)
+        // Returns the screen capture as ultra-optimized JPEG bytes for fast transmission
+        public static byte[] CaptureScreen(int maxDimension = 960)
         {
             Rectangle bounds = System.Windows.Forms.SystemInformation.VirtualScreen;
 
@@ -35,16 +35,16 @@ namespace HeyClicky.ComputerControl
                 {
                     using (Graphics g = Graphics.FromImage(scaledBitmap))
                     {
-                        g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        g.InterpolationMode = InterpolationMode.Bilinear;
                         g.DrawImage(rawBitmap, 0, 0, targetWidth, targetHeight);
                     }
 
                     using (MemoryStream ms = new MemoryStream())
                     {
-                        // Save with 80% JPEG quality
+                        // Save with 60% JPEG quality for ultra-fast upload & token efficiency
                         var encoder = GetEncoder(ImageFormat.Jpeg);
                         var encoderParams = new EncoderParameters(1);
-                        encoderParams.Param[0] = new EncoderParameter(Encoder.Quality, 80L);
+                        encoderParams.Param[0] = new EncoderParameter(Encoder.Quality, 60L);
 
                         if (encoder != null)
                         {

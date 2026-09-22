@@ -125,7 +125,7 @@ namespace HeyClicky.Core
                 context.LastError = result.StartsWith("Error") ? result : "";
                 context.ActionHistory.Add($"Step {context.StepCount} Result: {result}");
                 
-                await Task.Delay(1000, token); // Brief pause to let UI settle before next observation
+                await Task.Delay(200, token); // Fast pause for UI animations to settle
             }
 
             if (token.IsCancellationRequested)

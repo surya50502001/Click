@@ -7,7 +7,7 @@ namespace HeyClicky.ComputerControl
 {
     public class MouseController
     {
-        public static void MoveTo(int x, int y, int durationMs = 300)
+        public static void MoveTo(int x, int y, int durationMs = 120)
         {
             if (durationMs <= 0)
             {
@@ -18,9 +18,7 @@ namespace HeyClicky.ComputerControl
             NativeMethods.POINT startPos;
             NativeMethods.GetCursorPos(out startPos);
 
-            int steps = durationMs / 10;
-            if (steps == 0) steps = 1;
-
+            int steps = Math.Max(1, durationMs / 10);
             double dx = (x - startPos.x) / (double)steps;
             double dy = (y - startPos.y) / (double)steps;
 
@@ -29,31 +27,30 @@ namespace HeyClicky.ComputerControl
                 int nextX = (int)(startPos.x + (dx * i));
                 int nextY = (int)(startPos.y + (dy * i));
                 NativeMethods.SetCursorPos(nextX, nextY);
-                Thread.Sleep(10);
+                Thread.Sleep(8);
             }
 
-            // Ensure exact final position
             NativeMethods.SetCursorPos(x, y);
         }
 
         public static void LeftClick()
         {
             SendMouseEvent(NativeMethods.MouseEventFlags.LEFTDOWN);
-            Thread.Sleep(50);
+            Thread.Sleep(15);
             SendMouseEvent(NativeMethods.MouseEventFlags.LEFTUP);
         }
 
         public static void RightClick()
         {
             SendMouseEvent(NativeMethods.MouseEventFlags.RIGHTDOWN);
-            Thread.Sleep(50);
+            Thread.Sleep(15);
             SendMouseEvent(NativeMethods.MouseEventFlags.RIGHTUP);
         }
 
         public static void DoubleClick()
         {
             LeftClick();
-            Thread.Sleep(50);
+            Thread.Sleep(25);
             LeftClick();
         }
 
@@ -67,14 +64,14 @@ namespace HeyClicky.ComputerControl
             SendMouseEvent(NativeMethods.MouseEventFlags.LEFTUP);
         }
 
-        public static void Drag(int startX, int startY, int endX, int endY, int durationMs = 500)
+        public static void Drag(int startX, int startY, int endX, int endY, int durationMs = 250)
         {
-            MoveTo(startX, startY, 150);
-            Thread.Sleep(50);
+            MoveTo(startX, startY, 80);
+            Thread.Sleep(15);
             MouseDown();
-            Thread.Sleep(50);
+            Thread.Sleep(15);
             MoveTo(endX, endY, durationMs);
-            Thread.Sleep(50);
+            Thread.Sleep(15);
             MouseUp();
         }
 
@@ -82,14 +79,13 @@ namespace HeyClicky.ComputerControl
         {
             if (radius <= 0) radius = 50;
 
-            // Move to the starting point of the circle (at angle 0)
             int startX = (int)(centerX + radius);
             int startY = centerY;
-            MoveTo(startX, startY, 200);
-            Thread.Sleep(100);
+            MoveTo(startX, startY, 100);
+            Thread.Sleep(20);
 
             MouseDown();
-            Thread.Sleep(50);
+            Thread.Sleep(15);
 
             for (int i = 1; i <= steps; i++)
             {
@@ -97,10 +93,10 @@ namespace HeyClicky.ComputerControl
                 int x = (int)(centerX + (radius * Math.Cos(angle)));
                 int y = (int)(centerY + (radius * Math.Sin(angle)));
                 NativeMethods.SetCursorPos(x, y);
-                Thread.Sleep(25);
+                Thread.Sleep(12);
             }
 
-            Thread.Sleep(50);
+            Thread.Sleep(15);
             MouseUp();
         }
 
