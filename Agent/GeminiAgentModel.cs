@@ -14,14 +14,14 @@ namespace HeyClicky.Agent
         private readonly HttpClient _httpClient;
         private readonly ToolRegistry _toolRegistry;
 
-        // Fallback models prioritizing ultra-low latency models
+        // Verified active models in the environment with independent quotas
         private static readonly string[] CandidateModels = new[]
         {
-            "gemini-2.5-flash-lite",
-            "gemini-2.5-flash",
+            "gemini-3.5-flash-lite",
+            "gemini-3.6-flash",
             "gemini-flash-latest",
-            "gemini-3.5-flash",
-            "gemini-pro-latest"
+            "gemini-3.7-flash",
+            "gemini-3.5-flash"
         };
 
         public GeminiAgentModel(string apiKey, ToolRegistry toolRegistry)
@@ -94,13 +94,13 @@ namespace HeyClicky.Agent
                                            (int)response.StatusCode == 503 ||
                                            responseString.Contains("RESOURCE_EXHAUSTED", StringComparison.OrdinalIgnoreCase) ||
                                            responseString.Contains("overloaded", StringComparison.OrdinalIgnoreCase) ||
-                                           responseString.Contains("demand", StringComparison.OrdinalIgnoreCase);
+                                           responseString.Contains("demand", StringComparison.OrdinalIgnoreCase) ||
+                                           responseString.Contains("quota", StringComparison.OrdinalIgnoreCase);
 
                         if (isOverloaded)
                         {
-                            lastException = new Exception($"Model '{modelName}' high demand (attempt {attempt}/2). Switching...");
-                            await Task.Delay(1500 * attempt, cancellationToken); // Backoff before retry/fallback
-                            continue;
+                            lastException = new Exception($"Model '{modelName}' reached free-tier rate limit. Switching to alternative model...");
+                            break; // Switch to the next available model immediately!
                         }
                         else
                         {
@@ -112,9 +112,10 @@ namespace HeyClicky.Agent
                     {
                         throw;
                     }
-                    catch (Exception ex) when (ex.Message.Contains("high demand") || ex.Message.Contains("overloaded"))
+                    catch (Exception ex) when (ex.Message.Contains("rate limit") || ex.Message.Contains("overloaded"))
                     {
                         lastException = ex;
+                        break;
                     }
                     catch (Exception ex)
                     {
@@ -124,7 +125,7 @@ namespace HeyClicky.Agent
                 }
             }
 
-            throw lastException ?? new Exception("All candidate models failed or are currently overloaded. Please try again in a moment.");
+            throw lastException ?? new Exception("All candidate models reached temporary quota limits. Please wait 30 seconds and retry.");
         }
 
         private string BuildSystemPrompt(AgentContext context)
