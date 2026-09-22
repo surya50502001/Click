@@ -138,7 +138,9 @@ namespace HeyClicky
                         case AgentState.Error: dotColor = Colors.DarkRed; break;
                     }
 
-                    StatusDot.Fill = new SolidColorBrush(dotColor);
+                    var brush = new SolidColorBrush(dotColor);
+                    StatusDot.Fill = brush;
+                    StatusDotGlow.Fill = brush;
                     _overlay.UpdateStatus(message, dotColor);
                 });
             };
